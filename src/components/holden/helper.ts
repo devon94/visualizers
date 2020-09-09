@@ -13,8 +13,8 @@ let frequencyData: Uint8Array
 
 let cnv: HTMLCanvasElement = document.getElementById('canvas')! as HTMLCanvasElement
 let ctx: CanvasRenderingContext2D
-let c: number, wx: number, wy: number, mx: number, my: number, cSubtractor = 0
-let modRad = 0, rad = 0, i = 10, num = 0
+let c: number, wx: number, wy: number, mx: number, my: number
+let modRad = 0, i = 10
 
 function renderFrame() {
     requestAnimationFrame(renderFrame)
@@ -49,8 +49,6 @@ function fuckShitUp() {
 
     mx = (i * Math.sin(i)) + wx / 2
     my = (i * Math.cos(i)) + wy / 2
-    rad = i
-
 
     if (modRad <= c) {
         modRad += 2
