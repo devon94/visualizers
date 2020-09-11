@@ -4,8 +4,9 @@ function map(value: number, in_min: number, in_max: number, out_min: number, out
 
 let flip = false
 let hasFlipped = false
+let initialized = false
 
-let audioCtx: AudioContext = new window.AudioContext()
+let audioCtx: AudioContext
 let audio: HTMLAudioElement
 let audioSrc: MediaElementAudioSourceNode
 let analyser: AnalyserNode
@@ -88,9 +89,9 @@ function fuckShitUp() {
 
     const topElem = document.getElementById('top-waves')!
     const bottomElem = document.getElementById('bottom-waves')!
-    
-    topElem.style.height = `${map(frequencyData[8], 0, 255, 0, 240)}px`
-    bottomElem.style.height = `${map(frequencyData[8], 0, 255, 0, 240)}px`
+
+    topElem.style.height = `${map(frequencyData[12], 0, 255, 0, 240)}px`
+    bottomElem.style.height = `${map(frequencyData[12], 0, 255, 0, 240)}px`
 }
 
 function init() {
@@ -116,19 +117,25 @@ function resizeCanvas() {
 }
 
 export function startColorfulVisualizer() {
-    audio = document.getElementById('visualizerAudio')! as HTMLAudioElement
-    audioSrc = audioCtx.createMediaElementSource(audio!)
-    analyser = audioCtx.createAnalyser()
-    analyser.fftSize = 32
-    // we have to connect the MediaElementSource with the analyser
-    audioSrc.connect(analyser)
-    audioSrc.connect(audioCtx.destination)
+    if (!initialized) {
+        // @ts-expect-error
+        const AC = window.AudioContext || window.webkitAudioContext
+        audioCtx = new AC()
+        audio = document.getElementById('visualizerAudio')! as HTMLAudioElement
+        audioSrc = audioCtx.createMediaElementSource(audio!)
+        analyser = audioCtx.createAnalyser()
+        analyser.fftSize = 32
+        // we have to connect the MediaElementSource with the analyser
+        audioSrc.connect(analyser)
+        audioSrc.connect(audioCtx.destination)
 
-    frequencyData = new Uint8Array(analyser.frequencyBinCount)
+        frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
-    init()
-    audio.play()
-    renderFrame()
+        init()
+        audio.play()
+        renderFrame()
 
-    window.addEventListener("resize", resizeCanvas)
+        window.addEventListener("resize", resizeCanvas)
+        initialized = true
+    }
 }
